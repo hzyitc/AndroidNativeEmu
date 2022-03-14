@@ -17,7 +17,7 @@ from androidemu.java.java_classloader import JavaClassLoader
 from androidemu.java.java_vm import JavaVM
 from androidemu.memory import STACK_ADDR, STACK_SIZE, HOOK_MEMORY_BASE, HOOK_MEMORY_SIZE
 from androidemu.memory.memory_manager import MemoryManager
-from androidemu.native.hooks import NativeHooks
+from androidemu.native.handlers import NativeHandlers
 from androidemu.tracer import Tracer
 from androidemu.utils.memory_helpers import write_utf8
 from androidemu.vfs.file_system import VirtualFileSystem
@@ -69,7 +69,7 @@ class Emulator:
         self.java_vm = JavaVM(self, self.java_classloader, self.hooker)
 
         # Native
-        self.native_hooks = NativeHooks(self, self.memory_manager, self.modules, self.hooker)
+        self.native = NativeHandlers(self, self.memory_manager, self.modules, self.hooker)
 
         # Tracer
         self.tracer = Tracer(self.uc, self.modules)

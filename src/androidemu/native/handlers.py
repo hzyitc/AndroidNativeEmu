@@ -11,7 +11,7 @@ from androidemu.utils import memory_helpers
 logger = logging.getLogger(__name__)
 
 
-class NativeHooks:
+class NativeHandlers:
 
     def __init__(self, emu, memory: MemoryManager, modules: Modules, hooker: Hooker):
         self._emu = emu
