@@ -1,6 +1,7 @@
 import logging
 
 from androidemu.utils import memory_helpers
+from androidemu.utils.autoregister import autoregister, autoregistered_do
 
 logger = logging.getLogger(__name__)
 
@@ -8,9 +9,9 @@ class PrintfNativeHandler:
     def __init__(self, emu, native):
         self._emu = emu
 
-        native.register(self.vfprintf)
-        native.register(self.fprintf)
+        autoregistered_do(self, lambda func, symbol_name=None: native.register(func, symbol_name))
 
+    @autoregister()
     def vfprintf(self, uc, FILE, format, va_list):
         # int vfprintf ( FILE * stream, const char * format, va_list arg );
         struct_FILE = memory_helpers.read_byte_array(uc, FILE, 18)
@@ -41,5 +42,6 @@ class PrintfNativeHandler:
         result_string = result_string.format(args)
         logger.debug("Called vfprintf(%r)" % result_string)
 
+    @autoregister()
     def fprintf(self):
         raise NotImplementedError('Symbol hook not implemented fprintf')

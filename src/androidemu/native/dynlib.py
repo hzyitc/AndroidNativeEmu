@@ -2,6 +2,7 @@ import logging
 import os
 
 from androidemu.utils import memory_helpers
+from androidemu.utils.autoregister import autoregister, autoregistered_do
 
 logger = logging.getLogger(__name__)
 
@@ -11,12 +12,9 @@ class DynLibNativeHandler:
         self._memory = memory
         self._modules = modules
 
-        native.register(self.dlopen)
-        native.register(self.dlclose)
-        native.register(self.dladdr)
-        native.register(self.dlsym)
-        native.register(self.dlerror)
+        autoregistered_do(self, lambda func, symbol_name=None: native.register(func, symbol_name))
 
+    @autoregister()
     def dlopen(self, uc, path):
         path = memory_helpers.read_utf8(uc, path)
         logger.debug("Called dlopen(%s)" % path)
@@ -29,6 +27,7 @@ class DynLibNativeHandler:
 
         return None
 
+    @autoregister()
     def dlclose(self, uc, handle):
         """
         The function dlclose() decrements the reference count on the dynamic library handle handle.
@@ -37,6 +36,7 @@ class DynLibNativeHandler:
         logger.debug("Called dlclose(0x%x)" % handle)
         return 0
 
+    @autoregister()
     def dladdr(self, uc, addr, info):
         logger.debug("Called dladdr(0x%x, 0x%x)" % (addr, info))
 
@@ -51,6 +51,7 @@ class DynLibNativeHandler:
                 memory_helpers.write_uints(uc, addr, [dli_fname, mod.base, 0, 0])
                 return 1
 
+    @autoregister()
     def dlsym(self, uc, handle, symbol):
         symbol_str = memory_helpers.read_utf8(uc, symbol)
         logger.debug("Called dlsym(0x%x, %s)" % (handle, symbol_str))
@@ -70,5 +71,6 @@ class DynLibNativeHandler:
 
         raise NotImplementedError
 
+    @autoregister()
     def dlerror(self):
         raise NotImplementedError('Symbol hook not implemented dlerror')

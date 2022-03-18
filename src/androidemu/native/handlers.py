@@ -20,10 +20,10 @@ class NativeHandlers:
         self._modules = modules
         self._hooker = hooker
 
-        self.android = AndroidNativeHandler(emu, self)
-        self.dynlib = DynLibNativeHandler(emu, self, modules, memory)
-        self.pthread = PthreadNativeHandler(emu, self)
-        self.printf = PrintfNativeHandler(emu, self)
+        self.android = AndroidNativeHandler(self._emu, self)
+        self.dynlib = DynLibNativeHandler(self._emu, self, modules, memory)
+        self.pthread = PthreadNativeHandler(self._emu, self)
+        self.printf = PrintfNativeHandler(self._emu, self)
 
     def register(self, func: callable, symbol_name:str=None):
         """
@@ -33,12 +33,12 @@ class NativeHandlers:
             * only affects instance created later
 
         Args:
-            func (:obj:`function`): function
-            symbol_name (:obj:`string`, optional): symbol name to hook. 
+            func (:obj:`callable`): function
+            symbol_name (:obj:`str`, optional): symbol name to hook. 
                 if this value is None, the :attr:`func` name will be used
 
         Return:
-            :obj:`function`: origin :attr:`func`
+            :obj:`callable`: origin :attr:`func`
         """
         if symbol_name is None:
             symbol_name = func.__name__
