@@ -1,18 +1,17 @@
 import logging
 
-from androidemu.java.helpers.native_method import native_method, native_read_args
+from androidemu.java.helpers.native_method import native_read_args
 from androidemu.utils import memory_helpers
 
 logger = logging.getLogger(__name__)
 
 class AndroidNativeHandler:
-    def __init__(self, emu, modules, hooker):
+    def __init__(self, emu, native):
         self._emu = emu
 
-        modules.add_symbol_hook('__system_property_get', hooker.write_function(self.system_property_get) + 1)
-        modules.add_symbol_hook('__android_log_print', hooker.write_function(self.android_log_print) + 1)
+        native.register(self.system_property_get, symbol_name="__system_property_get")
+        native.register(self.android_log_print, symbol_name="__android_log_print")
 
-    @native_method
     def system_property_get(self, uc, name_ptr, buf_ptr):
         name = memory_helpers.read_utf8(uc, name_ptr)
         logger.debug("Called __system_property_get(%s, 0x%x)" % (name, buf_ptr))
@@ -24,7 +23,6 @@ class AndroidNativeHandler:
 
         return None
 
-    @native_method
     def android_log_print(self, uc, log_level, log_tag_ptr, log_format_ptr):
         params_count = len(locals())
         log_tag = memory_helpers.read_utf8(uc, log_tag_ptr)
