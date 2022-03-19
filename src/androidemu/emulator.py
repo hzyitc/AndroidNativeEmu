@@ -10,13 +10,13 @@ from androidemu.cpu.interrupt_handler import InterruptHandler
 from androidemu.cpu.syscall_handlers import SyscallHandlers
 from androidemu.cpu.syscall_hooks import SyscallHooks
 from androidemu.cpu.syscall_hooks_memory import SyscallHooksMemory
-from androidemu.hooker import Hooker
 from androidemu.internal.modules import Modules
 from androidemu.java.helpers.native_method import native_write_args
 from androidemu.java.java_classloader import JavaClassLoader
 from androidemu.java.java_vm import JavaVM
 from androidemu.memory import STACK_ADDR, STACK_SIZE, HOOK_MEMORY_BASE, HOOK_MEMORY_SIZE
 from androidemu.memory.memory_manager import MemoryManager
+from androidemu.native.bridge import NativeBridge
 from androidemu.native.handlers import NativeHandlers
 from androidemu.tracer import Tracer
 from androidemu.utils.memory_helpers import write_utf8
@@ -60,16 +60,15 @@ class Emulator:
         else:
             self.vfs = None
 
-        # Hooker
-        self.uc.mem_map(HOOK_MEMORY_BASE, HOOK_MEMORY_SIZE)
-        self.hooker = Hooker(self, HOOK_MEMORY_BASE, HOOK_MEMORY_SIZE)
+        # Bridge
+        self.bridge = NativeBridge(self, HOOK_MEMORY_BASE, HOOK_MEMORY_SIZE)
 
         # JavaVM
         self.java_classloader = JavaClassLoader()
-        self.java_vm = JavaVM(self, self.java_classloader, self.hooker)
+        self.java_vm = JavaVM(self, self.java_classloader)
 
         # Native
-        self.native = NativeHandlers(self, self.memory_manager, self.modules, self.hooker)
+        self.native = NativeHandlers(self, self.memory_manager, self.modules, self.bridge)
 
         # Tracer
         self.tracer = Tracer(self.uc, self.modules)

@@ -1,6 +1,5 @@
 import logging
 
-from androidemu.hooker import Hooker
 from androidemu.java.classes.constructor import Constructor
 from androidemu.java.classes.method import Method
 from androidemu.java.constant_values import MODIFIER_STATIC
@@ -8,6 +7,7 @@ from androidemu.java.helpers.native_method import native_method, native_read_arg
 from androidemu.java.java_classloader import JavaClassLoader
 from androidemu.java.jni_const import *
 from androidemu.java.jni_ref import *
+from androidemu.java.native_helper import register_func_table
 from androidemu.java.reference_table import ReferenceTable
 from androidemu.utils import memory_helpers
 
@@ -18,16 +18,15 @@ logger = logging.getLogger(__name__)
 class JNIEnv:
     """
     :type class_loader JavaClassLoader
-    :type hooker Hooker
     """
 
-    def __init__(self, emu, class_loader, hooker):
+    def __init__(self, emu, class_loader):
         self._emu = emu
         self._class_loader = class_loader
         self._locals = ReferenceTable(start=1, max_entries=2048)
         self._globals = ReferenceTable(start=4096, max_entries=512000)
 
-        (self.address_ptr, self.address) = hooker.write_function_table({
+        (self.address_ptr, self.table) = register_func_table(emu, {
             4: self.get_version,
             5: self.define_class,
             6: self.find_class,

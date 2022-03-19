@@ -1,9 +1,9 @@
 import logging
 
-from androidemu.hooker import Hooker
 from androidemu.internal.modules import Modules
 from androidemu.java.helpers.native_method import native_method
 from androidemu.memory.memory_manager import MemoryManager
+from androidemu.native.bridge import NativeBridge
 
 from androidemu.native.android import AndroidNativeHandler
 from androidemu.native.dynlib import DynLibNativeHandler
@@ -15,10 +15,10 @@ logger = logging.getLogger(__name__)
 
 class NativeHandlers:
 
-    def __init__(self, emu, memory: MemoryManager, modules: Modules, hooker: Hooker):
+    def __init__(self, emu, memory: MemoryManager, modules: Modules, bridge: NativeBridge):
         self._emu = emu
         self._modules = modules
-        self._hooker = hooker
+        self._bridge = bridge
 
         self.android = AndroidNativeHandler(self._emu, self)
         self.dynlib = DynLibNativeHandler(self._emu, self, modules, memory)
@@ -43,4 +43,4 @@ class NativeHandlers:
         if symbol_name is None:
             symbol_name = func.__name__
 
-        self._modules.add_symbol_hook(symbol_name, self._hooker.write_function(native_method(func)) + 1)
+        self._modules.add_symbol_hook(symbol_name, self._bridge.register(native_method(func)) + 1)

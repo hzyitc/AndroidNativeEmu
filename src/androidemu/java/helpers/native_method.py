@@ -3,7 +3,6 @@ import inspect
 from unicorn import Uc
 from unicorn.arm_const import *
 
-from androidemu.hooker import STACK_OFFSET
 from androidemu.java.java_class_def import JavaClassDef
 from androidemu.java.jni_const import JNI_ERR
 from androidemu.java.jni_ref import jobject, jstring, jobjectArray, jbyteArray, jclass
@@ -29,8 +28,7 @@ def native_write_args(emu, *argv):
 
     if amount >= 5:
         sp_start = emu.uc.reg_read(UC_ARM_REG_SP)
-        sp_current = sp_start - STACK_OFFSET  # Need to offset because our hook pushes one register on the stack.
-        sp_current = sp_current - (4 * (amount - 4))  # Reserve space for arguments.
+        sp_current = sp_start - (4 * (amount - 4))  # Reserve space for arguments.
         sp_end = sp_current
 
         for arg in argv[4:]:
@@ -56,7 +54,6 @@ def native_read_args(uc, args_count):
         native_args.append(uc.reg_read(UC_ARM_REG_R3))
 
     sp = uc.reg_read(UC_ARM_REG_SP)
-    sp = sp + STACK_OFFSET  # Need to offset by 4 because our hook pushes one register on the stack.
 
     if args_count >= 5:
         for x in range(0, args_count - 4):
