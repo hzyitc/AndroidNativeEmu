@@ -1,7 +1,6 @@
 import logging
 
 from androidemu.internal.modules import Modules
-from androidemu.java.helpers.native_method import native_method
 from androidemu.memory.memory_manager import MemoryManager
 from androidemu.native.bridge import NativeBridge
 
@@ -43,4 +42,4 @@ class NativeHandlers:
         if symbol_name is None:
             symbol_name = func.__name__
 
-        self._modules.add_symbol_hook(symbol_name, self._bridge.register(native_method(func)) + 1)
+        self._modules.add_symbol_hook(symbol_name, self._bridge.register(func))

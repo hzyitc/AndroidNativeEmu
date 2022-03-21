@@ -6,7 +6,6 @@ from unicorn import UcError, UC_HOOK_CODE, UC_HOOK_MEM_UNMAPPED, Uc, UC_PROT_ALL
 from unicorn.arm_const import *
 
 from androidemu.emulator import Emulator
-from androidemu.java.helpers.native_method import native_method
 from androidemu.java.java_class_def import JavaClassDef
 from androidemu.java.java_method_def import java_method_def
 

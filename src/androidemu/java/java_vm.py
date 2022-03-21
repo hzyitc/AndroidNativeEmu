@@ -1,6 +1,5 @@
 import logging
 
-from androidemu.java.helpers.native_method import native_method
 from androidemu.java.java_classloader import JavaClassLoader
 from androidemu.java.jni_const import *
 from androidemu.java.jni_env import JNIEnv
@@ -27,20 +26,16 @@ class JavaVM:
 
         self.jni_env = JNIEnv(emu, class_loader)
 
-    @native_method
     def destroy_java_vm(self, uc):
         raise NotImplementedError()
 
-    @native_method
     def attach_current_thread(self, uc):
         raise NotImplementedError()
 
-    @native_method
     def detach_current_thread(self, uc):
         # TODO: NooOO idea.
         pass
 
-    @native_method
     def get_env(self, uc, java_vm, env, version):
         logger.debug("java_vm: 0x%08x" % java_vm)
         logger.debug("env: 0x%08x" % env)
@@ -52,6 +47,5 @@ class JavaVM:
 
         return JNI_OK
 
-    @native_method
     def attach_current_thread_as_daemon(self, uc):
         raise NotImplementedError()

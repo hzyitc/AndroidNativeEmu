@@ -1,6 +1,8 @@
 from unicorn import *
 from unicorn.arm_const import *
 
+from androidemu.java.helpers.native_method import native_method
+
 class NativeBridge:
     _ITEM_SIZE = 4
     _ITEM_CONTENT = b'\x47\x00\x00\x00'
@@ -34,7 +36,7 @@ class NativeBridge:
         self._len += 1
 
         addr = self._base_addr + self._ITEM_SIZE * index
-        self._callback[index] = func
+        self._callback[index] = native_method(func)
 
         self._emu.uc.mem_write(addr, self._ITEM_CONTENT)
 
