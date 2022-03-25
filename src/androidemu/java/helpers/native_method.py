@@ -6,6 +6,7 @@ from unicorn.arm_const import *
 from androidemu.java.java_class_def import JavaClassDef
 from androidemu.java.jni_const import JNI_ERR
 from androidemu.java.jni_ref import jobject, jstring, jobjectArray, jbyteArray, jclass
+from androidemu.native.args import native_read_args
 
 
 def native_write_args(emu, *argv):
@@ -36,30 +37,6 @@ def native_write_args(emu, *argv):
             sp_current = sp_current + 4
 
         emu.uc.reg_write(UC_ARM_REG_SP, sp_end)
-
-
-def native_read_args(uc, args_count):
-    native_args = []
-
-    if args_count >= 1:
-        native_args.append(uc.reg_read(UC_ARM_REG_R0))
-
-    if args_count >= 2:
-        native_args.append(uc.reg_read(UC_ARM_REG_R1))
-
-    if args_count >= 3:
-        native_args.append(uc.reg_read(UC_ARM_REG_R2))
-
-    if args_count >= 4:
-        native_args.append(uc.reg_read(UC_ARM_REG_R3))
-
-    sp = uc.reg_read(UC_ARM_REG_SP)
-
-    if args_count >= 5:
-        for x in range(0, args_count - 4):
-            native_args.append(int.from_bytes(uc.mem_read(sp + (x * 4), 4), byteorder='little'))
-
-    return native_args
 
 
 def native_translate_arg(emu, val):
@@ -101,7 +78,7 @@ def native_method(func):
         if args_count < 0:
             raise RuntimeError("NativeMethod accept at least (self, uc) or (uc).")
 
-        native_args = native_read_args(uc, args_count)
+        native_args = native_read_args(uc)[:args_count]
 
         if len(argv) == 1:
             result = func(uc, *native_args)

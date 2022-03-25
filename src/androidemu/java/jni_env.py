@@ -3,12 +3,12 @@ import logging
 from androidemu.java.classes.constructor import Constructor
 from androidemu.java.classes.method import Method
 from androidemu.java.constant_values import MODIFIER_STATIC
-from androidemu.java.helpers.native_method import native_read_args
 from androidemu.java.java_classloader import JavaClassLoader
 from androidemu.java.jni_const import *
 from androidemu.java.jni_ref import *
 from androidemu.java.native_helper import register_func_table
 from androidemu.java.reference_table import ReferenceTable
+from androidemu.native.args import native_read_args
 from androidemu.utils import memory_helpers
 
 logger = logging.getLogger(__name__)
@@ -343,7 +343,7 @@ class JNIEnv:
 
         result = []
         args_count = len(args_list)
-        args_ptrs = native_read_args(uc, params_count + args_count)
+        args_ptrs = native_read_args(uc)
 
         for ref in args_ptrs[params_count:params_count+args_count]:
             result.append(self.get_reference(ref))

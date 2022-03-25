@@ -1,6 +1,6 @@
 import logging
 
-from androidemu.java.helpers.native_method import native_read_args
+from androidemu.native.args import native_read_args
 from androidemu.utils import memory_helpers
 from androidemu.utils.autoregister import autoregister, autoregistered_do
 
@@ -41,7 +41,7 @@ class AndroidNativeHandler:
                     i += 1
             i += 1
 
-        other_args = native_read_args(uc, params_count - 2 + args_count)[params_count-2:]
+        other_args = native_read_args(uc)[params_count-2:][:args_count]
         args = []
         for i in range(args_count):
             if args_type[i] == 's':
